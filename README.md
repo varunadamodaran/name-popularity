@@ -273,6 +273,12 @@ git push origin --all
 
 To push _all_ the branches to GitHub. You should be able to see each one individually by selecting it from the dropdown menu on your repo.
 
+You'll also need to explicitly push your **tags**:
+
+```
+git push origin --tags
+```
+
 In order to submit you assignment, you  need to both `push` your completed solution (all branches) to your GitHub repository **and** submit a link to your repository to [Canvas](https://canvas.uw.edu/) (so that we know where to find your work)!
 
 Before you submit your assignment, double-check the following:
