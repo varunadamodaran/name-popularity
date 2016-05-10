@@ -283,7 +283,7 @@ Before you submit your assignment, double-check the following:
 
 Submit a a link to your GitHub repository via [this canvas page](https://canvas.uw.edu/courses/1041440/assignments/3208932).
 
-The assignment is due on **Tue May 17 at 6:00 AM**.
+The assignment is due on **Wed May 18 at 6:00 AM**.
 
 ### Grading Rubric
 See the assignment page on Canvas for the grading rubric.
