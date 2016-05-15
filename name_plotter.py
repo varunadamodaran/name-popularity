@@ -1,4 +1,59 @@
 ## Your code goes here!!
+import glob
+import re
+import time
+def load_names_data(data_folder,maximum_rank='all ranks'):
+  rank = 0
+  t1 = time.time()
+  print('Loading files...')
+  if(maximum_rank !='all ranks'):
+    rank = int(maximum_rank)
+  content = []
+  name_dict = {}
+  name_list = []
+  for filename in glob.glob('data/yob*.txt'):
+    year = re.compile('[0-9]+').findall(filename)
+    year = int(year[0])
+    name_list = []
+    count = 0
+    with open(filename, "r") as baby_data:
+      first_male = 'Y'
+      for x in baby_data:       
+        name = re.compile('^[\w]+').findall(x)
+        sex = re.compile('(?<=,)[M,F](?=,)').findall(x)
+        if(sex[0] == 'M' and first_male == 'Y'):
+          count = 0
+          first_male = 'N'
+        number_babies = re.compile('[\d]+$').findall(x)
+        count += 1
+        if(rank != 0 and count > rank):
+          continue
+        else:
+          name_tuple = (name[0],sex[0],number_babies[0],count)
+          name_list.append(name_tuple)
+      name_dict[year]= name_list
+  #print(name_dict[1880])
+  t2 = time.time()
+  print('Done.Time to load:'+str(t2-t1)+'seconds')
+  return name_dict
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -43,10 +98,37 @@ def plot_names(data, names=[]):
 
 
 if __name__ == '__main__':
-    import sys
-    names_folder = sys.argv[1] #get the folder name from the command-line
+  import sys
+  names_folder = sys.argv[1] #get the folder name from the command-line
+  if(sys.argv[2] != ''):
+    rank = sys.argv[2]
+    names_data = load_names_data(names_folder,rank)
+  else:
     names_data = load_names_data(names_folder)
     
-    names_to_plot = sys.argv[2:] #rest of the arguments are names to plot
-    plot_names(names_data, names_to_plot)
+  names_to_plot = sys.argv[3:] #rest of the arguments are names to plot
+  print(names_to_plot)
+  print(names_data[1880])
+  plot_names(names_data, names_to_plot)
+    
+  cmd = None
+  datafile = None
+
+  # try: #catch invalid argument lengths
+  #   cmd = sys.argv[1]
+  #   datafile = sys.argv[2]
+  # except:
+  #   print(INVALID_MSG)
+  # else:
+  #   if cmd == 'load':
+      #G = load_names_data(datafile)
+      #print("loaded graph with", len(G), "nodes and", G.size(), "edges")
+    #elif cmd == 'analyze':
+      #G = load_graph(datafile)
+      #analyze_graph(G)
+    #elif cmd == 'plot':
+      #G = load_graph(datafile)
+      #plot_graph(G)
+    #else:
+      #print(INVALID_MSG)
     #plot_names(names, ['Joel','Ada'])
