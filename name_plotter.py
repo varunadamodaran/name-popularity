@@ -42,7 +42,7 @@ def load_names_data(data_folder,maximum_rank='all ranks'):
   #print(name_dict[1972])
   t2 = time.time()
   print('Done.Time to load:'+str(t2-t1)+' seconds')
-  transformed_data = transform_data(name_dict)
+  transformed_data = transform_data_hashmap(name_dict)
   return transformed_data
 
 
@@ -80,6 +80,43 @@ def transform_data(name_dict):
   #     print(tup)
   return name_list
 
+def transform_data_hashmap(name_dict):
+  print('Transforming data ...')
+  t1 = time.time()
+  Record = namedtuple('Record','name sex year')
+  name_list = []
+  year_new = {}
+  new_dict = {}
+  year_list = []
+  record_found = 'N'
+  for year in name_dict:
+    for name_tuple in name_dict[year]:
+      baby_name = name_tuple[0]
+      baby_sex = name_tuple[1]
+      new_tuple = (baby_name,baby_sex)
+      baby_count = name_tuple[2]
+      baby_rank = name_tuple[3]
+      record_found = 'N'
+      year_new = {}
+      year_old = {}
+      for key,value in new_dict.items():
+        if (key == new_tuple):
+          count_rank_tuple = (baby_count,baby_rank)
+          value[year] = count_rank_tuple
+          # year_old[year] = count_rank_tuple
+          # year_list.append(year_old)
+          # new_dict[key] = year_list
+          record_found = 'Y'
+      if(record_found == 'N'):
+        count_rank_tuple = (baby_count,baby_rank)
+        year_new[year] = count_rank_tuple
+        new_dict[new_tuple] = year_new       
+  t2 = time.time()
+  print('Done.Time to transform:'+str(t2-t1)+' seconds')
+  # print(new_dict[('John','M')])
+  # print(new_dict[('Jennifer','F')])
+  return new_dict
+
 def find_name_record_linear(name_list,name,sex):
   for record in name_list:
     if (str(record.name) == str(name) and str(record.sex) == str(sex)):
@@ -106,6 +143,15 @@ def find_name_record_binary(name_list,name,sex):
 
 def find_name_record(name_list,name,sex):
   return find_name_record_binary(name_list,name,sex)
+
+def find_name_record_hashmap(name_dict,name,sex):
+  name_tuple = (name,sex)
+  if(name_dict[name_tuple]):
+    return name_dict[name_tuple]
+  else:
+    return "None"
+
+
 
 
       
@@ -134,24 +180,22 @@ def plot_names(data, names=[]):
                 y_vals = [] #the ranks for each data point
                 labels = [] #the labels for each data point
                 year = {}
-                record = find_name_record(data,name,sex)
+                record = find_name_record_hashmap(data,name,sex)
                 #TODO: find the record for the name & sex
                 # if the record exists (it may not!)
                 # go through each year in the record
                 #   add the year to the list of x_vals
                 #   add the rank to the list of y_vals
                 #   add a label (e.g., "Count: 598") to the list of labels
-                #print(record.name)
-                #year = record.year
-                #print(year)
-                #print(name)
                 if (record != "None"):
-                  if(record.sex == sex):
-                    for key,value in record.year.items():
-                      x_vals.append(key)
-                      y_vals.append(value[1])
-                # print(x_vals)
-                # print(y_vals)
+                #   if(record.sex == sex):
+                #     for key,value in record.year.items():
+                #       x_vals.append(key)
+                #       y_vals.append(value[1])
+                  for key,value in record.items():
+                    x_vals.append(key)
+                    y_vals.append(value[1])
+                    labels.append(value[0])
                 trace = Scatter(x=x_vals, y=y_vals, text=labels, name=name+" ("+sex+")", mode='lines', hoverinfo='text')
                 traces.append(trace)
             except (KeyError): #if record key was not found, don't crash
