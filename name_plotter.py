@@ -38,6 +38,7 @@ def load_names_data(data_folder,maximum_rank='all ranks'):
   return name_dict
 
 
+#def transform_data(name_dict):
 
 
 
@@ -100,19 +101,15 @@ def plot_names(data, names=[]):
 if __name__ == '__main__':
   import sys
   names_folder = sys.argv[1] #get the folder name from the command-line
-  if(sys.argv[2] != ''):
-    rank = sys.argv[2]
-    names_data = load_names_data(names_folder,rank)
-  else:
-    names_data = load_names_data(names_folder)
+  rank = sys.argv[2]
+  names_data = load_names_data(names_folder,rank)
+  #print (names_data[1880])
+  #names_data = load_names_data(names_folder)
+  # names_to_plot = sys.argv[3:] #rest of the arguments are names to plot
+  # plot_names(names_data, names_to_plot)
     
-  names_to_plot = sys.argv[3:] #rest of the arguments are names to plot
-  print(names_to_plot)
-  print(names_data[1880])
-  plot_names(names_data, names_to_plot)
-    
-  cmd = None
-  datafile = None
+  # cmd = None
+  # datafile = None
 
   # try: #catch invalid argument lengths
   #   cmd = sys.argv[1]
