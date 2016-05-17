@@ -78,11 +78,19 @@ def transform_data(name_dict):
   #     print(tup)
   return name_list
 
-def find_name_record(name_list,name,sex):
+def find_name_record_linear(name_list,name,sex):
   for record in name_list:
     if (str(record.name) == str(name) and str(record.sex) == str(sex)):
       return record
   return "None"
+
+
+def find_name_record(name_list,name,sex):
+  return find_name_record_linear(name_list,name,sex)
+  # for record in name_list:
+  #   if (str(record.name) == str(name) and str(record.sex) == str(sex)):
+  #     return record
+  # return "None"
 
       
 
