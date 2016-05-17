@@ -2,12 +2,17 @@
 import glob
 import re
 import time
+import collections
+from collections import namedtuple
+
+ 
 def load_names_data(data_folder,maximum_rank='all ranks'):
   rank = 0
   t1 = time.time()
   print('Loading files...')
   if(maximum_rank !='all ranks'):
     rank = int(maximum_rank)
+
   content = []
   name_dict = {}
   name_list = []
@@ -32,30 +37,54 @@ def load_names_data(data_folder,maximum_rank='all ranks'):
           name_tuple = (name[0],sex[0],number_babies[0],count)
           name_list.append(name_tuple)
       name_dict[year]= name_list
-  #print(name_dict[1880])
+  #print(name_dict[1972])
   t2 = time.time()
-  print('Done.Time to load:'+str(t2-t1)+'seconds')
-  return name_dict
-
-
-#def transform_data(name_dict):
-
+  print('Done.Time to load:'+str(t2-t1)+' seconds')
+  transformed_data = transform_data(name_dict)
+  return transformed_data
 
 
 
+def transform_data(name_dict):
+  print('Transforming data ...')
+  t1 = time.time()
+  Record = namedtuple('Record','name sex year')
+  name_list = []
+  year_new = {}
+  record_found = 'N'
+  for year in name_dict:
+    for name_tuple in name_dict[year]:
+      baby_name = name_tuple[0]
+      baby_sex = name_tuple[1]
+      baby_count = name_tuple[2]
+      baby_rank = name_tuple[3]
+      record_found = 'N'
+      year_new = {}
+      for record in name_list:
+        if (baby_name == record.name and baby_sex == record.sex):
+          count_rank_tuple = (baby_count,baby_rank)
+          record.year[year] = count_rank_tuple
+          record_found = 'Y'
+      if(record_found == 'N'):
+        count_rank_tuple = (baby_count,baby_rank)
+        year_new[year] = count_rank_tuple
+        new_record = Record(baby_name,baby_sex,year_new)
+        name_list.append(new_record)
+        
+  t2 = time.time()
+  print('Done.Time to transform:'+str(t2-t1)+' seconds')
+  # for tup in name_list:
+  #   if (tup.name == 'Sophia'):
+  #     print(tup)
+  return name_list
 
+def find_name_record(name_list,name,sex):
+  for record in name_list:
+    if (str(record.name) == str(name) and str(record.sex) == str(sex)):
+      return record
+  return "None"
 
-
-
-
-
-
-
-
-
-
-
-
+      
 
 
 
@@ -66,7 +95,9 @@ def plot_names(data, names=[]):
         data  - a list of name records (e.g., tuples) to act as a data source
         names - a list of names (strings) which should be plotted
     """
-
+    Record1 = namedtuple('Record','name sex year')
+    record = Record1
+    #print(names[1])
     import plotly
     from plotly.graph_objs import Scatter, Scattergl, Layout
 
@@ -78,14 +109,25 @@ def plot_names(data, names=[]):
                 x_vals = [] #the years for each data point
                 y_vals = [] #the ranks for each data point
                 labels = [] #the labels for each data point
-
+                year = {}
+                record = find_name_record(data,name,sex)
                 #TODO: find the record for the name & sex
                 # if the record exists (it may not!)
                 # go through each year in the record
                 #   add the year to the list of x_vals
                 #   add the rank to the list of y_vals
                 #   add a label (e.g., "Count: 598") to the list of labels
-
+                #print(record.name)
+                #year = record.year
+                #print(year)
+                #print(name)
+                if (record != "None"):
+                  for key,value in record.year.items():
+                    #print(key)
+                    x_vals.append(key)
+                    y_vals.append(value[1])
+                # print(x_vals)
+                # print(y_vals)
                 trace = Scatter(x=x_vals, y=y_vals, text=labels, name=name+" ("+sex+")", mode='lines', hoverinfo='text')
                 traces.append(trace)
             except (KeyError): #if record key was not found, don't crash
@@ -103,10 +145,13 @@ if __name__ == '__main__':
   names_folder = sys.argv[1] #get the folder name from the command-line
   rank = sys.argv[2]
   names_data = load_names_data(names_folder,rank)
+  #transformed_data = transform_data(names_data)
+  #print(names_data)
+  #print(transformed_data)
   #print (names_data[1880])
   #names_data = load_names_data(names_folder)
-  # names_to_plot = sys.argv[3:] #rest of the arguments are names to plot
-  # plot_names(names_data, names_to_plot)
+  names_to_plot = sys.argv[3:] #rest of the arguments are names to plot
+  plot_names(names_data, names_to_plot)
     
   # cmd = None
   # datafile = None
