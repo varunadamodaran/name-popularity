@@ -3,7 +3,9 @@ import glob
 import re
 import time
 import collections
+import operator
 from collections import namedtuple
+from operator import attrgetter
 
  
 def load_names_data(data_folder,maximum_rank='all ranks'):
@@ -84,13 +86,27 @@ def find_name_record_linear(name_list,name,sex):
       return record
   return "None"
 
+def find_name_record_binary(name_list,name,sex):
+  new_list = sorted(name_list, key=attrgetter('name'))
+  mid = new_list[0]
+  lo = 0
+  hi = None
+  if hi is None:
+    hi = len(new_list)
+    while lo < hi:
+      mid = (lo+hi)//2
+      midval = new_list[mid]
+      if midval.name < name:
+        lo = mid+1
+      elif midval.name > name:
+        hi = mid
+      else:
+        return new_list[mid]
+    return "None"
 
 def find_name_record(name_list,name,sex):
-  return find_name_record_linear(name_list,name,sex)
-  # for record in name_list:
-  #   if (str(record.name) == str(name) and str(record.sex) == str(sex)):
-  #     return record
-  # return "None"
+  return find_name_record_binary(name_list,name,sex)
+
 
       
 
@@ -130,10 +146,10 @@ def plot_names(data, names=[]):
                 #print(year)
                 #print(name)
                 if (record != "None"):
-                  for key,value in record.year.items():
-                    #print(key)
-                    x_vals.append(key)
-                    y_vals.append(value[1])
+                  if(record.sex == sex):
+                    for key,value in record.year.items():
+                      x_vals.append(key)
+                      y_vals.append(value[1])
                 # print(x_vals)
                 # print(y_vals)
                 trace = Scatter(x=x_vals, y=y_vals, text=labels, name=name+" ("+sex+")", mode='lines', hoverinfo='text')
@@ -151,8 +167,11 @@ def plot_names(data, names=[]):
 if __name__ == '__main__':
   import sys
   names_folder = sys.argv[1] #get the folder name from the command-line
-  rank = sys.argv[2]
-  names_data = load_names_data(names_folder,rank)
+  if (sys.argv[2]):
+    rank = sys.argv[2]
+    names_data = load_names_data(names_folder,rank)
+  else:
+    names_data = load_names_data(names_folder)
   #transformed_data = transform_data(names_data)
   #print(names_data)
   #print(transformed_data)
