@@ -187,17 +187,19 @@ def plot_names(data, names=[]):
                 #   add the year to the list of x_vals
                 #   add the rank to the list of y_vals
                 #   add a label (e.g., "Count: 598") to the list of labels
-                if (record != "None"):
+                
                 #   if(record.sex == sex):
                 #     for key,value in record.year.items():
                 #       x_vals.append(key)
                 #       y_vals.append(value[1])
+                if (record != "None"):
                   for key,value in record.items():
                     x_vals.append(key)
                     y_vals.append(value[1])
                     labels.append(value[0])
-                trace = Scatter(x=x_vals, y=y_vals, text=labels, name=name+" ("+sex+")", mode='lines', hoverinfo='text')
-                traces.append(trace)
+                if (len(x_vals) != 0):
+                  trace = Scatter(x=x_vals, y=y_vals, text=labels, name=name+" ("+sex+")", mode='lines', hoverinfo='text')
+                  traces.append(trace)
             except (KeyError): #if record key was not found, don't crash
                 pass
 
@@ -205,7 +207,8 @@ def plot_names(data, names=[]):
                 xaxis = dict(title='Year',showgrid=False, showline=True, dtick=5),
                 yaxis = dict(title='Popularity Ranking', showgrid=True, showline=True, zerolinewidth=0, autorange='reversed', dtick=100),
             )
-    plotly.offline.plot({"data": traces, "layout": layout})
+    if(len(traces) != 0):
+      plotly.offline.plot({"data": traces, "layout": layout})
 
 
 if __name__ == '__main__':
