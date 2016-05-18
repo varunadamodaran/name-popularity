@@ -210,18 +210,18 @@ def plot_names(data, names=[]):
 
 if __name__ == '__main__':
   import sys
+  rank = 0
   names_folder = sys.argv[1] #get the folder name from the command-line
   if (sys.argv[2]):
     rank = sys.argv[2]
     names_data = load_names_data(names_folder,rank)
   else:
     names_data = load_names_data(names_folder)
-  #transformed_data = transform_data(names_data)
-  #print(names_data)
-  #print(transformed_data)
-  #print (names_data[1880])
-  #names_data = load_names_data(names_folder)
-  names_to_plot = sys.argv[3:] #rest of the arguments are names to plot
+
+  if(rank == 0):
+    names_to_plot = sys.argv[2:] #rest of the arguments are names to plot
+  else:
+    names_to_plot = sys.argv[3:]
   plot_names(names_data, names_to_plot)
     
   # cmd = None
